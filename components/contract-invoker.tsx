@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -18,6 +18,9 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 import { X, Plus } from "lucide-react";
+import { WalletNetwork } from '@creit.tech/stellar-wallets-kit';
+import { rpc, xdr, TransactionBuilder, Operation } from "@stellar/stellar-sdk"
+import useStellarWalletsKit from "@/hooks/useStellarWalletKit";
 
 const formSchema = z.object({
   contractId: z.string().min(1, "Contract ID is required"),
@@ -38,6 +41,11 @@ export function ContractInvoker({ network }: ContractInvokerProps) {
   const { toast } = useToast();
   const [response, setResponse] = useState<string>("");
   const [keyValues, setKeyValues] = useState<KeyValue[]>([]);
+  const kit = useStellarWalletsKit();
+
+  useEffect(() => {
+    response
+  }, [response])
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -80,12 +88,80 @@ export function ContractInvoker({ network }: ContractInvokerProps) {
     form.setValue("parameters", JSON.stringify(params, null, 2));
   };
 
+  const invoke_contract = async (contractId: string, functionName: string, args: xdr.ScVal[]) => {
+    try {
+      const soroban_server = new rpc.Server("https://soroban-testnet.stellar.org:443");
+      const address = await kit.getAddress();
+      const account = await soroban_server.getAccount(address.address);
+
+
+      // const scValArray = args
+      //   ? args.map((arg) => xdr.ScVal.scvString(arg))
+      //   : [];
+
+      let transaction = new TransactionBuilder(account, { networkPassphrase: WalletNetwork.TESTNET, fee: "1000" })
+        .setTimeout(300)
+        .addOperation(Operation.invokeContractFunction({
+          contract: contractId,
+          function: functionName,
+          args
+        }))
+        .build()
+
+      // console.log("Transaction: ", transaction)
+
+
+      transaction = await soroban_server.prepareTransaction(transaction);
+      const transactionXDR = transaction.toXDR();
+      const signedTransactionXDR = await kit.signTransaction(transactionXDR, { address: address.address, networkPassphrase: WalletNetwork.TESTNET });
+      const signedTransaction = TransactionBuilder.fromXDR(signedTransactionXDR.signedTxXdr, WalletNetwork.TESTNET);
+
+      const response = await soroban_server.sendTransaction(signedTransaction);
+
+      // console.log("Response: ", response.hash)
+
+      let get_transaction_data;
+      while (true) {
+        get_transaction_data = await soroban_server.getTransaction(response.hash);
+        if (get_transaction_data.status !== "NOT_FOUND") {
+          console.log("Status: ", get_transaction_data.status)
+          break;
+        }
+      }
+
+      if (get_transaction_data.status !== "SUCCESS") {
+        console.log("Transaction failed", get_transaction_data.resultXdr)
+        return null
+      }
+
+      // console.log("Before transaction meta")
+      // const transaction_meta = xdr.TransactionMeta.fromXDR(get_transaction_data.resultMetaXdr!, 'base64');
+      // console.log(transaction_meta)
+      const status = get_transaction_data.status
+      const result = get_transaction_data.resultMetaXdr.v3().sorobanMeta()?.returnValue().value()?.toString()
+      console.log("Result: ", result)
+
+      return { functionName, status, result }
+    } catch (error) {
+      console.log("Error: ", error)
+      toast({
+        title: "Error",
+        description: "Failed to invoke contract, verify your wallet network",
+        variant: "destructive",
+      });
+    }
+  }
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
+      console.log(keyValues);
       // Here we would normally interact with the Stellar network
+      const response = await invoke_contract(values.contractId, values.functionName, []);
+      // setResponse(JSON.stringify(response, null, 2));
       setResponse(JSON.stringify({
-        status: "success",
-        result: "Contract function executed successfully",
+        status: response?.status,
+        function: response?.functionName,
+        result: response?.result,
         timestamp: new Date().toISOString(),
       }, null, 2));
 
