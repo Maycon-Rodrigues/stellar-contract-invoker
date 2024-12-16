@@ -6,7 +6,7 @@ A simple and minimalist UI for interacting with smart contracts on the **Stellar
 
 - Interact with smart contracts on the Stellar network.
 - Minimalist and intuitive interface.
-- Built with:[![Next.js](https://img.shields.io/badge/Next.js-black?style=for-the-badge&logo=next.js)](https://nextjs.org/) [![ShadCN](https://img.shields.io/badge/ShadCN-%23FC76A1?style=for-the-badge)](https://shadcn.dev/) [![TailwindCSS](https://img.shields.io/badge/TailwindCSS-%2338B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/) [![Stellar SDK](https://img.shields.io/badge/Stellar%20SDK-blue?style=for-the-badge&logo=stellar)](https://www.stellar.org/developers)
+- Built with: [![Next.js](https://img.shields.io/badge/Next.js-black?style=for-the-badge&logo=next.js)](https://nextjs.org/) [![ShadCN](https://img.shields.io/badge/ShadCN-%23FC76A1?style=for-the-badge)](https://shadcn.dev/) [![TailwindCSS](https://img.shields.io/badge/TailwindCSS-%2338B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/) [![Stellar SDK](https://img.shields.io/badge/Stellar%20SDK-blue?style=for-the-badge&logo=stellar)](https://www.stellar.org/developers)
 
 ## 🛠️ Tech Stack
 
