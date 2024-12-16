@@ -1,5 +1,3 @@
-"use client";
-
 import {
   Select,
   SelectContent,
@@ -7,10 +5,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { WalletNetwork } from "@creit.tech/stellar-wallets-kit";
 
 interface NetworkSelectorProps {
   value: string;
-  onValueChange: (value: string) => void;
+  onValueChange: (value: WalletNetwork) => void;
 }
 
 export function NetworkSelector({ value, onValueChange }: NetworkSelectorProps) {
@@ -20,9 +19,9 @@ export function NetworkSelector({ value, onValueChange }: NetworkSelectorProps) 
         <SelectValue placeholder="Select network" />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="mainnet">Mainnet</SelectItem>
-        <SelectItem value="testnet">Testnet</SelectItem>
-        <SelectItem value="futurenet">Futurenet</SelectItem>
+        <SelectItem value={WalletNetwork.PUBLIC}>Mainnet</SelectItem>
+        <SelectItem value={WalletNetwork.TESTNET}>Testnet</SelectItem>
+        <SelectItem value={WalletNetwork.FUTURENET}>Futurenet</SelectItem>
       </SelectContent>
     </Select>
   );

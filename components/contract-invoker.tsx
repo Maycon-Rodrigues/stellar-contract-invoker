@@ -15,12 +15,24 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
-import { X, Plus } from "lucide-react";
-import { WalletNetwork } from '@creit.tech/stellar-wallets-kit';
-import { rpc, xdr, TransactionBuilder, Operation } from "@stellar/stellar-sdk"
-import useStellarWalletsKit from "@/hooks/useStellarWalletKit";
+import { X, Plus, LucideNetwork } from "lucide-react";
+import { Loader2 } from "lucide-react";
+import { invokeContract } from "@/lib/stellar/invoke";
+import { parameterTypes, type ParameterType } from "@/lib/parameter-types";
+import JsonView from '@uiw/react-json-view';
+import { lightTheme } from '@uiw/react-json-view/light';
+import { vscodeTheme } from '@uiw/react-json-view/vscode';
+import { useTheme } from "next-themes";
+import { WalletNetwork } from "@creit.tech/stellar-wallets-kit";
 
 const formSchema = z.object({
   contractId: z.string().min(1, "Contract ID is required"),
@@ -34,14 +46,15 @@ interface KeyValue {
 }
 
 interface ContractInvokerProps {
-  network: string;
+  network: WalletNetwork;
 }
 
 export function ContractInvoker({ network }: ContractInvokerProps) {
   const { toast } = useToast();
-  const [response, setResponse] = useState<string>("");
+  const { theme } = useTheme();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [response, setResponse] = useState<object>();
   const [keyValues, setKeyValues] = useState<KeyValue[]>([]);
-  const kit = useStellarWalletsKit();
 
   useEffect(() => {
     response
@@ -57,7 +70,7 @@ export function ContractInvoker({ network }: ContractInvokerProps) {
   });
 
   const addKeyValue = () => {
-    setKeyValues([...keyValues, { key: "", value: "" }]);
+    setKeyValues([...keyValues, { key: 'String', value: "" }]);
   };
 
   const removeKeyValue = (index: number) => {
@@ -69,7 +82,10 @@ export function ContractInvoker({ network }: ContractInvokerProps) {
   const updateKeyValue = (index: number, field: "key" | "value", value: string) => {
     const newKeyValues = keyValues.map((kv, i) => {
       if (i === index) {
-        return { ...kv, [field]: value };
+        return {
+          ...kv,
+          [field]: field === "key" ? value as ParameterType : value,
+        };
       }
       return kv;
     });
@@ -88,88 +104,59 @@ export function ContractInvoker({ network }: ContractInvokerProps) {
     form.setValue("parameters", JSON.stringify(params, null, 2));
   };
 
-  const invoke_contract = async (contractId: string, functionName: string, args: xdr.ScVal[]) => {
+  async function onSubmit({ contractId, functionName }: z.infer<typeof formSchema>) {
+    // Here we would normally interact with the Stellar network
     try {
-      const soroban_server = new rpc.Server("https://soroban-testnet.stellar.org:443");
-      const address = await kit.getAddress();
-      const account = await soroban_server.getAccount(address.address);
+      const response = await invokeContract(
+        contractId,
+        functionName,
+        [keyValues],
+        network,
+        setIsLoading
+      );
 
-
-      // const scValArray = args
-      //   ? args.map((arg) => xdr.ScVal.scvString(arg))
-      //   : [];
-
-      let transaction = new TransactionBuilder(account, { networkPassphrase: WalletNetwork.TESTNET, fee: "1000" })
-        .setTimeout(300)
-        .addOperation(Operation.invokeContractFunction({
-          contract: contractId,
-          function: functionName,
-          args
-        }))
-        .build()
-
-      // console.log("Transaction: ", transaction)
-
-
-      transaction = await soroban_server.prepareTransaction(transaction);
-      const transactionXDR = transaction.toXDR();
-      const signedTransactionXDR = await kit.signTransaction(transactionXDR, { address: address.address, networkPassphrase: WalletNetwork.TESTNET });
-      const signedTransaction = TransactionBuilder.fromXDR(signedTransactionXDR.signedTxXdr, WalletNetwork.TESTNET);
-
-      const response = await soroban_server.sendTransaction(signedTransaction);
-
-      // console.log("Response: ", response.hash)
-
-      let get_transaction_data;
-      while (true) {
-        get_transaction_data = await soroban_server.getTransaction(response.hash);
-        if (get_transaction_data.status !== "NOT_FOUND") {
-          console.log("Status: ", get_transaction_data.status)
-          break;
-        }
+      if (response?.error) {
+        throw response.error;
       }
 
-      if (get_transaction_data.status !== "SUCCESS") {
-        console.log("Transaction failed", get_transaction_data.resultXdr)
-        return null
+      if (response?.result === null && response?.status === "SUCCESS") {
+        console.log("Status da UI: ", response?.status);
+        setResponse({
+          status: response?.status,
+          function: response?.functionName,
+          timestamp: new Date().toISOString()
+        });
+
+        toast({
+          title: "Success",
+          description: "Contract function executed successfully",
+        });
+
+        return
       }
 
-      // console.log("Before transaction meta")
-      // const transaction_meta = xdr.TransactionMeta.fromXDR(get_transaction_data.resultMetaXdr!, 'base64');
-      // console.log(transaction_meta)
-      const status = get_transaction_data.status
-      const result = get_transaction_data.resultMetaXdr.v3().sorobanMeta()?.returnValue().value()?.toString()
-      console.log("Result: ", result)
+      const result = response?.result.toString();
 
-      return { functionName, status, result }
-    } catch (error) {
-      console.log("Error: ", error)
-      toast({
-        title: "Error",
-        description: "Failed to invoke contract, verify your wallet network",
-        variant: "destructive",
+      if (response?.status === "SUCCESS") {
+        setResponse({
+          status: response?.status,
+          function: response?.functionName,
+          result,
+          timestamp: new Date().toISOString()
+        });
+
+        toast({
+          title: "Success",
+          description: "Contract function executed successfully",
+        });
+      }
+    } catch (error: any) {
+      setResponse({
+        status: "FAILURE",
+        message: error.message,
+        timestamp: new Date().toISOString()
       });
-    }
-  }
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    try {
-      console.log(keyValues);
-      // Here we would normally interact with the Stellar network
-      const response = await invoke_contract(values.contractId, values.functionName, []);
-      // setResponse(JSON.stringify(response, null, 2));
-      setResponse(JSON.stringify({
-        status: response?.status,
-        function: response?.functionName,
-        result: response?.result,
-        timestamp: new Date().toISOString(),
-      }, null, 2));
-
-      toast({
-        title: "Success",
-        description: "Contract function executed successfully",
-      });
-    } catch (error) {
       toast({
         title: "Error",
         description: "Failed to execute contract function",
@@ -230,12 +217,21 @@ export function ContractInvoker({ network }: ContractInvokerProps) {
                 <div className="space-y-3">
                   {keyValues.map((kv, index) => (
                     <div key={index} className="flex gap-3">
-                      <Input
-                        placeholder="Key"
+                      <Select
                         value={kv.key}
-                        onChange={(e) => updateKeyValue(index, "key", e.target.value)}
-                        className="flex-1"
-                      />
+                        onValueChange={(value) => updateKeyValue(index, "key", value)}
+                      >
+                        <SelectTrigger className="flex-1">
+                          <SelectValue placeholder="Select type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {Object.entries(parameterTypes).map(([key, value]) => (
+                            <SelectItem key={key} value={value}>
+                              {value}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                       <Input
                         placeholder="Value"
                         value={kv.value}
@@ -286,11 +282,29 @@ export function ContractInvoker({ network }: ContractInvokerProps) {
       <Card>
         <CardContent className="pt-6">
           <h3 className="text-lg font-semibold mb-4">Response</h3>
-          <pre className="bg-muted p-4 rounded-lg overflow-auto max-h-[400px] font-mono">
-            {response || "No response yet"}
+          <pre className={`bg-muted p-4 rounded-lg overflow-auto max-h-[400px] font-mono transition-opacity ${isLoading ? 'opacity-50' : 'opacity-100'}`}
+            style={{
+              whiteSpace: "pre-wrap",
+              wordBreak: "break-word",
+            }}>
+            {isLoading ? (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span>Processing request...</span>
+              </div>
+            ) : response ? (
+              <JsonView
+                value={response}
+                style={theme === "dark" ? vscodeTheme : lightTheme}
+                displayDataTypes={false}
+                objectSortKeys={false}
+              />
+            ) : (
+              "No response yet"
+            )}
           </pre>
         </CardContent>
       </Card>
-    </div>
+    </div >
   );
 }
