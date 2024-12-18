@@ -295,7 +295,11 @@ export function ContractInvoker({ network }: ContractInvokerProps) {
             ) : response ? (
               <JsonView
                 value={response}
-                style={theme === "dark" ? vscodeTheme : lightTheme}
+                style={
+                  theme === "dark" || theme === "system"
+                    ? vscodeTheme
+                    : lightTheme
+                }
                 displayDataTypes={false}
                 objectSortKeys={false}
               />
