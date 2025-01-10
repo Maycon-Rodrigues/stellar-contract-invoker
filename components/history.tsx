@@ -22,7 +22,8 @@ export function History() {
   ];
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 opacity-35">
+      <h2 className="text-lg font-bold justify-center align-center">This is a page that is still under development</h2>
       {historyItems.map((item) => (
         <Card key={item.id}>
           <CardContent className="p-4">
@@ -38,11 +39,10 @@ export function History() {
                   {new Date(item.timestamp).toLocaleString()}
                 </p>
                 <span
-                  className={`text-sm ${
-                    item.status === "success"
-                      ? "text-green-500"
-                      : "text-red-500"
-                  }`}
+                  className={`text-sm ${item.status === "success"
+                    ? "text-green-500"
+                    : "text-red-500"
+                    }`}
                 >
                   {item.status}
                 </span>
