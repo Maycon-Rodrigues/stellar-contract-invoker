@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
-import { X, Plus, LucideNetwork } from "lucide-react";
+import { X, Plus } from "lucide-react";
 import { Loader2 } from "lucide-react";
 import { invokeContract } from "@/lib/stellar/invoke";
 import { parameterTypes, type ParameterType } from "@/lib/parameter-types";
@@ -33,6 +33,7 @@ import { lightTheme } from '@uiw/react-json-view/light';
 import { vscodeTheme } from '@uiw/react-json-view/vscode';
 import { useTheme } from "next-themes";
 import { WalletNetwork } from "@creit.tech/stellar-wallets-kit";
+import { formatResult } from "@/lib/utils";
 
 const formSchema = z.object({
   contractId: z.string().min(1, "Contract ID is required"),
@@ -94,23 +95,17 @@ export function ContractInvoker({ network }: ContractInvokerProps) {
   };
 
   const updateParametersJson = (newKeyValues: KeyValue[]) => {
-    const params = newKeyValues.reduce((acc, { key, value }) => {
-      if (key) {
-        acc[key] = value;
-      }
-      return acc;
-    }, {} as Record<string, string>);
-
+    const params = newKeyValues.map(({ key, value }) => ({ key, value }));
     form.setValue("parameters", JSON.stringify(params, null, 2));
   };
 
-  async function onSubmit({ contractId, functionName }: z.infer<typeof formSchema>) {
-    // Here we would normally interact with the Stellar network
+  async function onSubmit({ contractId, functionName, parameters }: z.infer<typeof formSchema>) {
     try {
+      const parsedParams = JSON.parse(parameters || "[]");
       const response = await invokeContract(
         contractId,
         functionName,
-        [keyValues],
+        parsedParams,
         network,
         setIsLoading
       );
@@ -120,11 +115,10 @@ export function ContractInvoker({ network }: ContractInvokerProps) {
       }
 
       if (response?.result === null && response?.status === "SUCCESS") {
-        console.log("Status da UI: ", response?.status);
         setResponse({
           status: response?.status,
           function: response?.functionName,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         });
 
         toast({
@@ -132,17 +126,15 @@ export function ContractInvoker({ network }: ContractInvokerProps) {
           description: "Contract function executed successfully",
         });
 
-        return
+        return;
       }
-
-      const result = response?.result.toString();
 
       if (response?.status === "SUCCESS") {
         setResponse({
           status: response?.status,
           function: response?.functionName,
-          result,
-          timestamp: new Date().toISOString()
+          result: formatResult(response?.result),
+          timestamp: new Date().toISOString(),
         });
 
         toast({
@@ -154,7 +146,7 @@ export function ContractInvoker({ network }: ContractInvokerProps) {
       setResponse({
         status: "FAILURE",
         message: error.message,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
 
       toast({
