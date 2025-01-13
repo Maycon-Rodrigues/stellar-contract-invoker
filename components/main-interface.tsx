@@ -8,6 +8,7 @@ import { History } from "@/components/history";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Rocket } from "lucide-react";
 import { WalletNetwork } from "@creit.tech/stellar-wallets-kit";
+import Link from "next/link";
 
 export function MainInterface() {
   const [network, setNetwork] = useState<WalletNetwork>(WalletNetwork.TESTNET);
@@ -15,10 +16,12 @@ export function MainInterface() {
   return (
     <div className="container mx-auto p-4">
       <header className="flex items-center justify-between mb-8">
-        <div className="flex items-center gap-2">
-          <Rocket className="h-8 w-8 text-primary" />
-          <h1 className="text-2xl font-bold">Stellar Contract Invoker</h1>
-        </div>
+        <Link href="/">
+          <div className="flex items-center gap-2">
+            <Rocket className="h-8 w-8 text-primary" />
+            <h1 className="text-2xl font-bold">Stellar Contract Invoker</h1>
+          </div>
+        </Link>
         <div className="flex items-center gap-4">
           <NetworkSelector value={network} onValueChange={setNetwork} />
           <ThemeToggle />
