@@ -3,7 +3,6 @@ import { Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
-import { DevelopmentNotice } from "@/components/development-notice";
 
 const spaceGrotesk = Space_Grotesk({ subsets: ['latin'] })
 
@@ -26,7 +25,6 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <DevelopmentNotice />
           {children}
           <Toaster />
         </ThemeProvider>
