@@ -37,7 +37,7 @@ export function LandingPage() {
       </div>
 
       <main className="flex-1 pt-20 md:pt-16">
-        <section className="container space-y-6 py-12 text-center md:py-24 lg:py-32 p-4">
+        <section className="flex-1 space-y-6 py-12 text-center md:py-24 lg:py-32 p-4">
           <div className="mx-auto flex max-w-[64rem] flex-col items-center gap-4">
             <h1 className="text-3xl font-bold sm:text-5xl md:text-6xl lg:text-7xl">
               Invoke Stellar Smart Contracts with Ease
@@ -60,7 +60,7 @@ export function LandingPage() {
           </div>
         </section>
 
-        <section className="container py-20 md:py-24 lg:py-32 p-4" id="features">
+        <section className="flex-1 py-20 md:py-24 lg:py-32 p-4" id="features">
           <div className="mx-auto grid max-w-5xl items-center gap-6 py-12 lg:grid-cols-2 lg:gap-12">
             <Image
               src="https://sjc.microlink.io/7qbRE4qUyAnKlRa1cpC89nLbfQjPIEdjPMZglwrGDhiUMpsL9zbpTHdkjXhyztd3ngOdu8EdmM1NmE4GJZdeVw.jpeg"
@@ -93,8 +93,8 @@ export function LandingPage() {
           </div>
         </section>
 
-        <section className="border-t bg-muted/50">
-          <div className="container py-12 md:py-24 lg:py-32 p-4">
+        <section className="flex-1 border-t bg-muted/50">
+          <div className="items-center py-12 md:py-24 lg:py-32 p-4">
             <div className="mx-auto max-w-6xl text-center">
               <h2 className="text-3xl font-bold sm:text-4xl">
                 Ready to streamline your Stellar development?
