@@ -9,11 +9,11 @@ import { ThemeToggle } from "@/components/theme-toggle";
 export function LandingPage() {
   return (
     <div id="top" className="min-h-screen bg-background text-foreground">
-      <div className="fixed left-0 right-0 top-0 z-20 border-b bg-background/80 backdrop-blur-sm">
-        <div className="flex h-16 items-center justify-between ml-16 mr-16">
+      <div className="fixed left-0 right-0 top-0 z-20 border-b bg-background/80 backdrop-blur-sm py-6 px-2 md:p-2">
+        <div className="flex h-16 items-center justify-between px-2 md:mx-16">
           <Link href="#top">
             <div className="flex items-center gap-2">
-              <Rocket className="h-6 w-6" />
+              <Rocket className="h-6 w-6 hidden md:block" />
               <span className="text-lg font-semibold">Stellar Contract Invoker</span>
             </div>
           </Link>
@@ -36,8 +36,8 @@ export function LandingPage() {
         </div>
       </div>
 
-      <main className="flex-1 pt-16">
-        <section className="container space-y-6 py-12 text-center md:py-24 lg:py-32">
+      <main className="flex-1 pt-20 md:pt-16">
+        <section className="container space-y-6 py-12 text-center md:py-24 lg:py-32 p-4">
           <div className="mx-auto flex max-w-[64rem] flex-col items-center gap-4">
             <h1 className="text-3xl font-bold sm:text-5xl md:text-6xl lg:text-7xl">
               Invoke Stellar Smart Contracts with Ease
@@ -60,7 +60,7 @@ export function LandingPage() {
           </div>
         </section>
 
-        <section className="container py-12 md:py-24 lg:py-32" id="features">
+        <section className="container py-20 md:py-24 lg:py-32 p-4" id="features">
           <div className="mx-auto grid max-w-5xl items-center gap-6 py-12 lg:grid-cols-2 lg:gap-12">
             <Image
               src="https://sjc.microlink.io/7qbRE4qUyAnKlRa1cpC89nLbfQjPIEdjPMZglwrGDhiUMpsL9zbpTHdkjXhyztd3ngOdu8EdmM1NmE4GJZdeVw.jpeg"
@@ -94,7 +94,7 @@ export function LandingPage() {
         </section>
 
         <section className="border-t bg-muted/50">
-          <div className="container py-12 md:py-24 lg:py-32">
+          <div className="container py-12 md:py-24 lg:py-32 p-4">
             <div className="mx-auto max-w-6xl text-center">
               <h2 className="text-3xl font-bold sm:text-4xl">
                 Ready to streamline your Stellar development?
