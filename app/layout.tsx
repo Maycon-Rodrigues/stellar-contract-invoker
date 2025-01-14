@@ -3,7 +3,7 @@ import { Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
-import { GoogleAnalytics } from '@next/third-parties/google'
+import { GoogleTagManager } from '@next/third-parties/google'
 
 const spaceGrotesk = Space_Grotesk({ subsets: ['latin'] })
 
@@ -30,7 +30,7 @@ export default function RootLayout({
           <Toaster />
         </ThemeProvider>
       </body>
-      <GoogleAnalytics gaId="G-PF7HC4H7B6" />
+      <GoogleTagManager gtmId="G-PF7HC4H7B6" />
     </html>
   );
 }
