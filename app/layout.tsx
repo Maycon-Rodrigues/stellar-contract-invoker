@@ -19,7 +19,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <GoogleTagManager gtmId="G-PF7HC4H7B6" />
+      <GoogleTagManager gtmId="GTM-MMWHZ7B7" />
       <body className={spaceGrotesk.className}>
         <ThemeProvider
           attribute="class"
