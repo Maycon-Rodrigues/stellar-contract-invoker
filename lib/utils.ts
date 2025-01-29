@@ -40,16 +40,12 @@ export function handleParameterType(args: Array<ParameterTypeObject>) {
         return params.push(new XdrLargeInt("i64", +arg.value).toI64());
       case parameterTypes.I128:
         return params.push(new XdrLargeInt("i128", +arg.value).toI128());
-      case parameterTypes.I256:
-        return params.push(new XdrLargeInt("i256", +arg.value).toI256());
       case parameterTypes.U32:
         return params.push(xdr.ScVal.scvU32(+arg.value));
       case parameterTypes.U64:
         return params.push(new XdrLargeInt("u64", +arg.value).toU64());
       case parameterTypes.U128:
         return params.push(new XdrLargeInt("u128", +arg.value).toU64());
-      case parameterTypes.U256:
-        return params.push(new XdrLargeInt("u256", +arg.value).toU256());
       case parameterTypes.MAP:
         return params.push(xdr.ScVal.scvMap(arg.value));
       case parameterTypes.STRING:
