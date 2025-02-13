@@ -1,6 +1,6 @@
 import { walletKit } from "./wallet";
 import { rpc, TransactionBuilder, Operation, scValToNative, nativeToScVal } from "@stellar/stellar-sdk";
-import { handleParameterType } from "../utils";
+import { getNetworkRPC, handleParameterType } from "../utils";
 import { WalletNetwork } from "@creit.tech/stellar-wallets-kit";
 
 
@@ -17,7 +17,8 @@ export const invokeContract = async (
   try {
     setLoading(true)
 
-    const soroban_server = new rpc.Server("https://soroban-testnet.stellar.org:443");
+    const rpcServer = getNetworkRPC(networkPassphrase);
+    const soroban_server = new rpc.Server(rpcServer);
     const address = await kit.getAddress();
     const account = await soroban_server.getAccount(address.address);
     // TODO: Validate if we'll use the network passphrase from the wallet
