@@ -34,6 +34,7 @@ import { vscodeTheme } from '@uiw/react-json-view/vscode';
 import { useTheme } from "next-themes";
 import { WalletNetwork } from "@creit.tech/stellar-wallets-kit";
 import { formatResult } from "@/lib/utils";
+import { useWalletStore } from "@/store/wallet";
 
 const formSchema = z.object({
   contractId: z.string().min(1, "Contract ID is required"),
@@ -46,16 +47,13 @@ interface KeyValue {
   value: string;
 }
 
-interface ContractInvokerProps {
-  network: WalletNetwork;
-}
-
-export function ContractInvoker({ network }: ContractInvokerProps) {
+export function ContractInvoker() {
   const { toast } = useToast();
   const { theme } = useTheme();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [response, setResponse] = useState<object>();
   const [keyValues, setKeyValues] = useState<KeyValue[]>([]);
+  const { network } = useWalletStore();
 
   useEffect(() => {
     response
