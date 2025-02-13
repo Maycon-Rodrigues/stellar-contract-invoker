@@ -6,9 +6,9 @@ import {
 } from '@creit.tech/stellar-wallets-kit';
 
 
-export const walletKit = (network: WalletNetwork): StellarWalletsKit => {
+export const walletKit = (networkPassphrase: WalletNetwork): StellarWalletsKit => {
   return new StellarWalletsKit({
-    network,
+    network: networkPassphrase,
     selectedWalletId: FREIGHTER_ID,
     modules: [new FreighterModule()],
   })
