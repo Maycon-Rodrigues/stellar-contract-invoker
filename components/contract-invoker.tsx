@@ -32,7 +32,6 @@ import JsonView from '@uiw/react-json-view';
 import { lightTheme } from '@uiw/react-json-view/light';
 import { vscodeTheme } from '@uiw/react-json-view/vscode';
 import { useTheme } from "next-themes";
-import { WalletNetwork } from "@creit.tech/stellar-wallets-kit";
 import { formatResult } from "@/lib/utils";
 import { useWalletStore } from "@/store/wallet";
 
