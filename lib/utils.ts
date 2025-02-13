@@ -2,9 +2,21 @@ import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { parameterTypes, ParameterType } from './parameter-types';
 import { Address, XdrLargeInt, xdr } from "@stellar/stellar-sdk";
+import { WalletNetwork } from '@creit.tech/stellar-wallets-kit';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
+}
+
+export function getNetworkRPC(networkPassphrase: WalletNetwork): string {
+  switch (networkPassphrase) {
+    case WalletNetwork.PUBLIC:
+      return 'https://mainnet.sorobanrpc.com';
+    case WalletNetwork.TESTNET:
+      return 'https://soroban-testnet.stellar.org:443';
+    default:
+      return 'https://soroban-testnet.stellar.org:443';
+  }
 }
 
 export function formatWallerAddresse(address: string) {
