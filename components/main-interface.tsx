@@ -1,18 +1,14 @@
 "use client";
 
-import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { NetworkSelector } from "@/components/network-selector";
 import { ContractInvoker } from "@/components/contract-invoker";
 import { History } from "@/components/history";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Rocket } from "lucide-react";
-import { WalletNetwork } from "@creit.tech/stellar-wallets-kit";
 import Link from "next/link";
 
 export function MainInterface() {
-  const [network, setNetwork] = useState<WalletNetwork>(WalletNetwork.TESTNET);
-
   return (
     <div className="container mx-auto p-4">
       <header className="flex items-center justify-between mb-8">
@@ -23,7 +19,7 @@ export function MainInterface() {
           </div>
         </Link>
         <div className="flex items-center gap-4">
-          <NetworkSelector value={network} onValueChange={setNetwork} />
+          <NetworkSelector />
           <ThemeToggle />
         </div>
       </header>
@@ -35,7 +31,7 @@ export function MainInterface() {
         </TabsList>
 
         <TabsContent value="explorer" className="space-y-4">
-          <ContractInvoker network={network} />
+          <ContractInvoker />
         </TabsContent>
 
         <TabsContent value="history">
