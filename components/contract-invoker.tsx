@@ -52,7 +52,7 @@ export function ContractInvoker() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [response, setResponse] = useState<object>();
   const [keyValues, setKeyValues] = useState<KeyValue[]>([]);
-  const { network } = useWalletStore();
+  const { networkPassphrase } = useWalletStore();
 
   useEffect(() => {
     response
@@ -103,7 +103,7 @@ export function ContractInvoker() {
         contractId,
         functionName,
         parsedParams,
-        network,
+        networkPassphrase,
         setIsLoading
       );
 
