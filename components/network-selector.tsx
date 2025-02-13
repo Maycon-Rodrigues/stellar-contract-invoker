@@ -5,16 +5,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useWalletStore } from "@/store/wallet";
 import { WalletNetwork } from "@creit.tech/stellar-wallets-kit";
 
-interface NetworkSelectorProps {
-  value: string;
-  onValueChange: (value: WalletNetwork) => void;
-}
+export function NetworkSelector() {
+  const { network, setNetwork } = useWalletStore();
 
-export function NetworkSelector({ value, onValueChange }: NetworkSelectorProps) {
+
+  async function handleSelect(value: WalletNetwork) {
+    setNetwork(value);
+  }
+
   return (
-    <Select value={value} onValueChange={onValueChange}>
+    <Select value={network} onValueChange={handleSelect}>
       <SelectTrigger className="w-[180px]">
         <SelectValue placeholder="Select network" />
       </SelectTrigger>
