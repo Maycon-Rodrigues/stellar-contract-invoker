@@ -9,15 +9,15 @@ import { useWalletStore } from "@/store/wallet";
 import { WalletNetwork } from "@creit.tech/stellar-wallets-kit";
 
 export function NetworkSelector() {
-  const { network, setNetwork } = useWalletStore();
+  const { networkPassphrase, setNetworkPassphrase } = useWalletStore();
 
 
   async function handleSelect(value: WalletNetwork) {
-    setNetwork(value);
+    setNetworkPassphrase(value);
   }
 
   return (
-    <Select value={network} onValueChange={handleSelect}>
+    <Select value={networkPassphrase} onValueChange={handleSelect}>
       <SelectTrigger className="w-[180px]">
         <SelectValue placeholder="Select network" />
       </SelectTrigger>
