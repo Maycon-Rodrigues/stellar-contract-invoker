@@ -79,16 +79,16 @@ export function MainInterface() {
               </p>
             </div>
           </div>
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
-            <div className="flex items-center gap-4 bg-card/50 backdrop-blur-sm p-3 rounded-2xl border shadow-sm">
-              <Label>{network}</Label>
-              <div className="h-6 w-px bg-border" />
+          <div className="flex flex-row-reverse justify-end sm:flex-row items-center sm:items-center gap-4">
+            <div className="flex items-center gap-4 bg-card/50 backdrop-blur-sm sm:p-2 rounded-2xl border shadow-sm">
+              <Label className="hidden sm:inline">{network}</Label>
+              <div className="h-6 w-px bg-border hidden sm:inline" />
               <ThemeToggle />
             </div>
             <Button
               onClick={connectWallet}
               variant="default"
-              className="group flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground transition-all rounded-2xl h-[50px] px-6"
+              className="group flex flex-1 items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground transition-all rounded-2xl h-[50px] px-6"
             >
               <Wallet className="h-4 w-4" />
               {address ? formatWallerAddresse(address) : "Connect Wallet"}
