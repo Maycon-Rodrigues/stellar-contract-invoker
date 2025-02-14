@@ -25,14 +25,14 @@ export function LandingPage() {
               className="flex items-center gap-2 text-sm font-medium hover:underline"
             >
               <Github className="h-5 w-5" />
-              GitHub
+              <span className="hidden sm:inline">GitHub</span>
             </Link>
             <Link
               target="_blank"
               className="flex items-center gap-2 text-sm font-medium hover:underline"
               href="https://stellar-contract-invoker.gitbook.io">
               <NewspaperIcon className="h-5 w-5" />
-              Changelog
+              <span className="hidden sm:inline">Changelog</span>
             </Link>
             <Button variant="default" asChild>
               <Link href="/invoker">
