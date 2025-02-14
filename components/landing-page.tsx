@@ -70,7 +70,7 @@ export function LandingPage() {
         <section className="flex-1 py-20 md:py-24 lg:py-32 p-4" id="features">
           <div className="mx-auto grid max-w-5xl items-center gap-6 py-12 lg:grid-cols-2 lg:gap-12">
             <Image
-              src="https://sjc.microlink.io/7qbRE4qUyAnKlRa1cpC89nLbfQjPIEdjPMZglwrGDhiUMpsL9zbpTHdkjXhyztd3ngOdu8EdmM1NmE4GJZdeVw.jpeg"
+              src="/sci.png"
               alt="Stellar Contract Invoker Interface"
               width={600}
               height={400}
