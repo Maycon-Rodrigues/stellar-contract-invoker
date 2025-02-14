@@ -3,7 +3,7 @@
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import { Rocket, Code, History, Zap, Github } from 'lucide-react'
+import { Rocket, Code, History, Zap, Github, NewspaperIcon } from 'lucide-react'
 import { ThemeToggle } from "@/components/theme-toggle";
 
 export function LandingPage() {
@@ -26,6 +26,13 @@ export function LandingPage() {
             >
               <Github className="h-5 w-5" />
               GitHub
+            </Link>
+            <Link
+              target="_blank"
+              className="flex items-center gap-2 text-sm font-medium hover:underline"
+              href="https://stellar-contract-invoker.gitbook.io">
+              <NewspaperIcon className="h-5 w-5" />
+              Changelog
             </Link>
             <Button variant="default" asChild>
               <Link href="/invoker">
