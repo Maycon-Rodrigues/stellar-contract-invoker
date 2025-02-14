@@ -21,8 +21,6 @@ export const invokeContract = async (
     const soroban_server = new rpc.Server(rpcServer);
     const address = await kit.getAddress();
     const account = await soroban_server.getAccount(address.address);
-    // TODO: Validate if we'll use the network passphrase from the wallet
-    // const { networkPassphrase } = await kit.getNetwork();
 
     // Create a transaction
     let transaction = new TransactionBuilder(account, { networkPassphrase, fee: "1000" })
