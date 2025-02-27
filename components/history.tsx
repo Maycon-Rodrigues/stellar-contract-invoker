@@ -1,56 +1,49 @@
-"use client";
-
 import { Card, CardContent } from "@/components/ui/card";
+import { useHistoryStore } from "@/store/history";
 
 export function History() {
-  // Mock history data
-  const historyItems = [
-    {
-      id: 1,
-      contractId: "GABCD...",
-      functionName: "transfer",
-      timestamp: "2024-02-14T12:00:00Z",
-      status: "success",
-    },
-    {
-      id: 2,
-      contractId: "GDEFG...",
-      functionName: "mint",
-      timestamp: "2024-02-14T11:30:00Z",
-      status: "error",
-    },
-  ];
+  const { histories } = useHistoryStore()
 
   return (
-    <div className="space-y-4 opacity-35">
-      <h2 className="text-lg font-bold justify-center align-center">This is a page that is still under development</h2>
-      {historyItems.map((item) => (
-        <Card key={item.id}>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="font-semibold">{item.functionName}</h3>
-                <p className="text-sm text-muted-foreground">
-                  Contract: {item.contractId}
-                </p>
-              </div>
-              <div className="text-right">
-                <p className="text-sm text-muted-foreground">
-                  {new Date(item.timestamp).toLocaleString()}
-                </p>
-                <span
-                  className={`text-sm ${item.status === "success"
-                    ? "text-green-500"
-                    : "text-red-500"
-                    }`}
-                >
-                  {item.status}
-                </span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      ))}
+    <div className="space-y-4">
+      {histories.length === 0 ? (
+        <div className="flex flex-col text-lg font-bold justify-center items-center">
+          <span>No history found.</span>
+          <span>Start your first interaction with the Stellar Contract Invoker.</span>
+        </div>
+      ) : (
+        <>
+          <h2 className="text-lg font-bold justify-center align-center">My history in the Stellar Contract Invoker</h2>
+          {histories.map((item) => (
+            <Card key={item.timestamp}>
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-sm text-muted-foreground">Function: <span className="text-lg text-white font-semibold">{item.functionName}</span></h3>
+                    <p className="text-sm text-muted-foreground truncate w-[200px] overflow-hidden sm:w-auto sm:overflow-visible sm:truncate-none">
+                      Contract: {item.contractId}
+                    </p>
+                    <p className="py-1 text-sm text-white">{item.networkPassphrase.split(";", 1)}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm text-muted-foreground">
+                      {new Date(item.timestamp).toLocaleString()}
+                    </p>
+                    <span
+                      className={`text-sm ${item.status === "SUCCESS"
+                        ? "text-green-500"
+                        : "text-red-500"
+                        }`}
+                    >
+                      {item.status}
+                    </span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )).reverse()}
+        </>
+      )}
     </div>
   );
 }
