@@ -34,6 +34,7 @@ import { vscodeTheme } from '@uiw/react-json-view/vscode';
 import { useTheme } from "next-themes";
 import { formatResult } from "@/lib/utils";
 import { useWalletStore } from "@/store/wallet";
+import { useHistoryStore } from "@/store/history";
 
 const formSchema = z.object({
   contractId: z.string().min(1, "Contract ID is required"),
@@ -53,6 +54,7 @@ export function ContractInvoker() {
   const [response, setResponse] = useState<object>();
   const [keyValues, setKeyValues] = useState<KeyValue[]>([]);
   const { networkPassphrase } = useWalletStore();
+  const { addHistory } = useHistoryStore();
 
   useEffect(() => {
     response
@@ -106,6 +108,15 @@ export function ContractInvoker() {
         networkPassphrase,
         setIsLoading
       );
+
+      addHistory({
+        contractId,
+        functionName,
+        networkPassphrase,
+        parameters: parsedParams,
+        timestamp: new Date().toISOString(),
+        status: response?.status ? response.status : "FAILURE",
+      })
 
       if (response?.error) {
         throw response.error;
