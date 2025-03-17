@@ -109,52 +109,95 @@ export function ContractInvoker() {
         setIsLoading
       );
 
+      if (response?.error) {
+        console.log(response.error.toString());
+
+        // Create an object with error details
+        const errorResponse = {
+          status: "FAILURE",
+          function: functionName,
+          message: response.error.toString(),
+          timestamp: new Date().toISOString(),
+        };
+
+        // Update state
+        setResponse(errorResponse);
+
+        // Add error details to history
+        addHistory({
+          contractId,
+          functionName,
+          networkPassphrase,
+          parameters: parsedParams,
+          timestamp: new Date().toISOString(),
+          status: "FAILURE",
+          response: errorResponse
+        });
+
+        toast({
+          title: "Error",
+          description: "Failed to execute contract function",
+          variant: "destructive",
+        });
+
+        return;
+      }
+
+      let successResponse;
+
+      if (response?.result === null && response?.status === "SUCCESS") {
+        successResponse = {
+          status: response?.status,
+          function: response?.functionName,
+          timestamp: new Date().toISOString(),
+        };
+      } else if (response?.status === "SUCCESS") {
+        successResponse = {
+          status: response?.status,
+          function: response?.functionName,
+          result: formatResult(response?.result),
+          timestamp: new Date().toISOString(),
+        };
+      }
+
+      // Update state
+      setResponse(successResponse);
+
+      // Add history
       addHistory({
         contractId,
         functionName,
         networkPassphrase,
         parameters: parsedParams,
         timestamp: new Date().toISOString(),
-        status: response?.status ? response.status : "FAILURE",
-      })
+        status: response?.status || "SUCCESS",
+        response: successResponse
+      });
 
-      if (response?.error) {
-        throw response.error;
-      }
+      toast({
+        title: "Success",
+        description: "Contract function executed successfully",
+      });
 
-      if (response?.result === null && response?.status === "SUCCESS") {
-        setResponse({
-          status: response?.status,
-          function: response?.functionName,
-          timestamp: new Date().toISOString(),
-        });
-
-        toast({
-          title: "Success",
-          description: "Contract function executed successfully",
-        });
-
-        return;
-      }
-
-      if (response?.status === "SUCCESS") {
-        setResponse({
-          status: response?.status,
-          function: response?.functionName,
-          result: formatResult(response?.result),
-          timestamp: new Date().toISOString(),
-        });
-
-        toast({
-          title: "Success",
-          description: "Contract function executed successfully",
-        });
-      }
     } catch (error: any) {
-      setResponse({
+      // Response with error
+      const errorResponse = {
         status: "FAILURE",
-        message: error.message,
+        message: error.message.toString(),
         timestamp: new Date().toISOString(),
+      };
+
+      setResponse(errorResponse);
+
+      // Add error details to history
+      addHistory({
+        contractId,
+        functionName,
+        networkPassphrase,
+        parameters: JSON.parse(parameters || "[]"),
+        timestamp: new Date().toISOString(),
+        status: "FAILURE",
+        response: errorResponse
       });
 
       toast({
