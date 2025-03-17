@@ -9,6 +9,7 @@ type HistoryStore = {
   parameters: string[]
   timestamp: string
   status: string
+  response: unknown
 }
 
 type HistoriesStore = {
