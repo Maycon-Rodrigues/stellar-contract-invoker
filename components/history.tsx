@@ -1,8 +1,21 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { useHistoryStore } from "@/store/history";
+import { HistoryItemModal } from "./history-item-modal";
+import { useState } from "react";
+import { WalletNetwork } from "@creit.tech/stellar-wallets-kit";
+
+interface HistoryItem {
+  contractId: string;
+  functionName: string;
+  networkPassphrase: WalletNetwork;
+  parameters: string[];
+  timestamp: string;
+  status: string;
+}
 
 export function History() {
   const { histories } = useHistoryStore()
+  const [selectedItem, setSelectedItem] = useState<HistoryItem | null>(null);
 
   return (
     <div className="space-y-4">
@@ -15,7 +28,9 @@ export function History() {
         <>
           <h2 className="text-lg font-bold justify-center align-center">My history in the Stellar Contract Invoker</h2>
           {histories.map((item) => (
-            <Card key={item.timestamp}>
+            <Card key={item.timestamp}
+              className="transition-all hover:shadow-md cursor-pointer"
+              onClick={() => setSelectedItem(item)}>
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -44,6 +59,10 @@ export function History() {
           )).reverse()}
         </>
       )}
+
+      <HistoryItemModal item={selectedItem} onClose={() => setSelectedItem(null)} />
+
     </div>
+
   );
 }
