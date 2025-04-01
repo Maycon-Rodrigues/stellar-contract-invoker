@@ -1,5 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { useHistoryStore } from "@/store/history";
+import { useExplorerStore } from "@/store/explorer";
 import { HistoryItemModal } from "./history-item-modal";
 import { useState } from "react";
 import { WalletNetwork } from "@creit.tech/stellar-wallets-kit";
@@ -13,9 +14,24 @@ interface HistoryItem {
   status: string;
 }
 
-export function History() {
+interface HistoryProps {
+  onExecute?: () => void;
+}
+
+export function History({ onExecute }: HistoryProps) {
   const { histories } = useHistoryStore()
+  const { setInitialData } = useExplorerStore()
   const [selectedItem, setSelectedItem] = useState<HistoryItem | null>(null);
+
+  const handleExecute = (item: HistoryItem) => {
+    setInitialData({
+      contractId: item.contractId,
+      functionName: item.functionName,
+      parameters: item.parameters
+    });
+    setSelectedItem(null);
+    onExecute?.();
+  };
 
   return (
     <div className="space-y-4">
@@ -60,9 +76,11 @@ export function History() {
         </>
       )}
 
-      <HistoryItemModal item={selectedItem} onClose={() => setSelectedItem(null)} />
-
+      <HistoryItemModal 
+        item={selectedItem} 
+        onClose={() => setSelectedItem(null)} 
+        onExecute={handleExecute}
+      />
     </div>
-
   );
 }

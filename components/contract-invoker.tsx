@@ -35,6 +35,7 @@ import { useTheme } from "next-themes";
 import { formatResult } from "@/lib/utils";
 import { useWalletStore } from "@/store/wallet";
 import { useHistoryStore } from "@/store/history";
+import { useExplorerStore } from "@/store/explorer";
 
 const formSchema = z.object({
   contractId: z.string().min(1, "Contract ID is required"),
@@ -55,10 +56,7 @@ export function ContractInvoker() {
   const [keyValues, setKeyValues] = useState<KeyValue[]>([]);
   const { networkPassphrase } = useWalletStore();
   const { addHistory } = useHistoryStore();
-
-  useEffect(() => {
-    response
-  }, [response])
+  const { initialData, setInitialData } = useExplorerStore();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -68,6 +66,23 @@ export function ContractInvoker() {
       parameters: "",
     },
   });
+
+  useEffect(() => {
+    if (initialData) {
+      form.setValue("contractId", initialData.contractId);
+      form.setValue("functionName", initialData.functionName);
+      
+      const newKeyValues = initialData.parameters.map(param => ({
+        key: param.key ,
+        value: param.value
+      }));
+      
+      setKeyValues(newKeyValues);
+      updateParametersJson(newKeyValues);
+      
+      setInitialData(null);
+    }
+  }, [initialData, form, setInitialData]);
 
   const addKeyValue = () => {
     setKeyValues([...keyValues, { key: 'String', value: "" }]);

@@ -12,12 +12,13 @@ import { walletKit } from "@/lib/stellar/wallet";
 import { ISupportedWallet, WalletNetwork } from "@creit.tech/stellar-wallets-kit";
 import { useWalletStore } from "@/store/wallet";
 import { formatWallerAddresse } from "@/lib/utils";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
 
 export function MainInterface() {
   const { address, network, networkPassphrase, setAddress, setNetwork, setNetworkPassphrase } = useWalletStore();
   const kit = walletKit(networkPassphrase);
+  const [activeTab, setActiveTab] = useState("explorer");
 
   async function connectWallet() {
     await kit.openModal({
@@ -97,7 +98,7 @@ export function MainInterface() {
           </div>
         </header>
 
-        <Tabs defaultValue="explorer" className="space-y-8">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
           <div className="flex justify-center">
             <TabsList className="grid w-full max-w-[400px] grid-cols-2 p-1 rounded-2xl bg-muted/50 backdrop-blur-sm">
               <TabsTrigger
@@ -135,7 +136,7 @@ export function MainInterface() {
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.3 }}
             >
-              <History />
+              <History onExecute={() => setActiveTab("explorer")} />
             </motion.div>
           </TabsContent>
         </Tabs>

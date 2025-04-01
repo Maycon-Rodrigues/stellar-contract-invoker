@@ -10,6 +10,7 @@ import JsonView from "@uiw/react-json-view";
 import { lightTheme } from '@uiw/react-json-view/light';
 import { vscodeTheme } from '@uiw/react-json-view/vscode';
 import { useTheme } from "next-themes";
+import { Button } from "./ui/button";
 
 interface HistoryItem {
   contractId: string
@@ -24,11 +25,12 @@ interface HistoryItem {
 interface HistoryItemModalProps {
   item: HistoryItem | null;
   onClose: () => void;
+  onExecute: (item: HistoryItem) => void;
 }
 
-export function HistoryItemModal({ item, onClose }: HistoryItemModalProps) {
+export function HistoryItemModal({ item, onClose, onExecute }: HistoryItemModalProps) {
   const { theme } = useTheme();
-
+  
   return (
     <Dialog open={!!item} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-2xl">
@@ -81,6 +83,7 @@ export function HistoryItemModal({ item, onClose }: HistoryItemModalProps) {
                 </div>
               </div>
             </div>
+            <Button onClick={() => onExecute(item)}>Execute on Explorer</Button>
           </>
         )}
       </DialogContent>
