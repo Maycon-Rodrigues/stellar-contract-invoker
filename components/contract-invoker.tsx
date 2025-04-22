@@ -28,9 +28,9 @@ import { X, Plus } from "lucide-react";
 import { Loader2 } from "lucide-react";
 import { invokeContract } from "@/lib/stellar/invoke";
 import { parameterTypes, type ParameterType } from "@/lib/parameter-types";
-import JsonView from '@uiw/react-json-view';
-import { lightTheme } from '@uiw/react-json-view/light';
-import { vscodeTheme } from '@uiw/react-json-view/vscode';
+import JsonView from "@uiw/react-json-view";
+import { lightTheme } from "@uiw/react-json-view/light";
+import { vscodeTheme } from "@uiw/react-json-view/vscode";
 import { useTheme } from "next-themes";
 import { formatResult } from "@/lib/utils";
 import { useWalletStore } from "@/store/wallet";
@@ -71,21 +71,21 @@ export function ContractInvoker() {
     if (initialData) {
       form.setValue("contractId", initialData.contractId);
       form.setValue("functionName", initialData.functionName);
-      
-      const newKeyValues = initialData.parameters.map(param => ({
-        key: param.key ,
-        value: param.value
+
+      const newKeyValues = initialData.parameters.map((param) => ({
+        key: param.key,
+        value: param.value,
       }));
-      
+
       setKeyValues(newKeyValues);
       updateParametersJson(newKeyValues);
-      
+
       setInitialData(null);
     }
   }, [initialData, form, setInitialData]);
 
   const addKeyValue = () => {
-    setKeyValues([...keyValues, { key: 'String', value: "" }]);
+    setKeyValues([...keyValues, { key: "String", value: "" }]);
   };
 
   const removeKeyValue = (index: number) => {
@@ -94,12 +94,16 @@ export function ContractInvoker() {
     updateParametersJson(newKeyValues);
   };
 
-  const updateKeyValue = (index: number, field: "key" | "value", value: string) => {
+  const updateKeyValue = (
+    index: number,
+    field: "key" | "value",
+    value: string
+  ) => {
     const newKeyValues = keyValues.map((kv, i) => {
       if (i === index) {
         return {
           ...kv,
-          [field]: field === "key" ? value as ParameterType : value,
+          [field]: field === "key" ? (value as ParameterType) : value,
         };
       }
       return kv;
@@ -113,7 +117,11 @@ export function ContractInvoker() {
     form.setValue("parameters", JSON.stringify(params, null, 2));
   };
 
-  async function onSubmit({ contractId, functionName, parameters }: z.infer<typeof formSchema>) {
+  async function onSubmit({
+    contractId,
+    functionName,
+    parameters,
+  }: z.infer<typeof formSchema>) {
     try {
       const parsedParams = JSON.parse(parameters || "[]");
       const response = await invokeContract(
@@ -146,7 +154,7 @@ export function ContractInvoker() {
           parameters: parsedParams,
           timestamp: new Date().toISOString(),
           status: "FAILURE",
-          response: errorResponse
+          response: errorResponse,
         });
 
         toast({
@@ -186,14 +194,13 @@ export function ContractInvoker() {
         parameters: parsedParams,
         timestamp: new Date().toISOString(),
         status: response?.status || "SUCCESS",
-        response: successResponse
+        response: successResponse,
       });
 
       toast({
         title: "Success",
         description: "Contract function executed successfully",
       });
-
     } catch (error: any) {
       // Response with error
       const errorResponse = {
@@ -212,7 +219,7 @@ export function ContractInvoker() {
         parameters: JSON.parse(parameters || "[]"),
         timestamp: new Date().toISOString(),
         status: "FAILURE",
-        response: errorResponse
+        response: errorResponse,
       });
 
       toast({
@@ -223,25 +230,50 @@ export function ContractInvoker() {
     }
   }
 
+  async function handleFetchContractInterface() {
+    const contractId = form.getValues("contractId");
+    const network = "testnet";
+    const response = await fetch("/api/contract/interface", {
+      method: "POST",
+      body: JSON.stringify({ contractId, network }),
+    });
+    const { data } = await response.json();
+    console.log(data);
+  }
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <Card>
         <CardContent className="pt-6">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <FormField
-                control={form.control}
-                name="contractId"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Contract ID</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter contract ID" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div className="flex items-end justify-between gap-2">
+                <FormField
+                  control={form.control}
+                  name="contractId"
+                  render={({ field }) => (
+                    <FormItem className="w-full">
+                      <FormLabel>Contract ID</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter contract ID" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <Button
+                  onClick={() => {
+                    handleFetchContractInterface();
+                  }}
+                  type="button"
+                  className="h-10"
+                  variant="outline"
+                  size="sm"
+                >
+                  Interface
+                </Button>
+              </div>
 
               <FormField
                 control={form.control}
@@ -277,23 +309,29 @@ export function ContractInvoker() {
                     <div key={index} className="flex gap-3">
                       <Select
                         value={kv.key}
-                        onValueChange={(value) => updateKeyValue(index, "key", value)}
+                        onValueChange={(value) =>
+                          updateKeyValue(index, "key", value)
+                        }
                       >
                         <SelectTrigger className="flex-1">
                           <SelectValue placeholder="Select type" />
                         </SelectTrigger>
                         <SelectContent>
-                          {Object.entries(parameterTypes).map(([key, value]) => (
-                            <SelectItem key={key} value={value}>
-                              {value}
-                            </SelectItem>
-                          ))}
+                          {Object.entries(parameterTypes).map(
+                            ([key, value]) => (
+                              <SelectItem key={key} value={value}>
+                                {value}
+                              </SelectItem>
+                            )
+                          )}
                         </SelectContent>
                       </Select>
                       <Input
                         placeholder="Value"
                         value={kv.value}
-                        onChange={(e) => updateKeyValue(index, "value", e.target.value)}
+                        onChange={(e) =>
+                          updateKeyValue(index, "value", e.target.value)
+                        }
                         className="flex-1"
                       />
                       <Button
@@ -340,11 +378,15 @@ export function ContractInvoker() {
       <Card>
         <CardContent className="pt-6">
           <h3 className="text-lg font-semibold mb-4">Response</h3>
-          <pre className={`bg-muted p-4 rounded-lg overflow-auto max-h-[400px] font-mono transition-opacity ${isLoading ? 'opacity-50' : 'opacity-100'}`}
+          <pre
+            className={`bg-muted p-4 rounded-lg overflow-auto max-h-[400px] font-mono transition-opacity ${
+              isLoading ? "opacity-50" : "opacity-100"
+            }`}
             style={{
               whiteSpace: "pre-wrap",
               wordBreak: "break-word",
-            }}>
+            }}
+          >
             {isLoading ? (
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -367,6 +409,6 @@ export function ContractInvoker() {
           </pre>
         </CardContent>
       </Card>
-    </div >
+    </div>
   );
 }
