@@ -32,7 +32,7 @@ import JsonView from "@uiw/react-json-view";
 import { lightTheme } from "@uiw/react-json-view/light";
 import { vscodeTheme } from "@uiw/react-json-view/vscode";
 import { useTheme } from "next-themes";
-import { formatResult } from "@/lib/utils";
+import { formatResult, handleError } from "@/lib/utils";
 import { useWalletStore } from "@/store/wallet";
 import { useHistoryStore } from "@/store/history";
 import { useExplorerStore } from "@/store/explorer";
@@ -68,7 +68,7 @@ export function ContractInvoker() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [response, setResponse] = useState<object>();
   const [keyValues, setKeyValues] = useState<KeyValue[]>([]);
-  const { networkPassphrase } = useWalletStore();
+  const { networkPassphrase, network } = useWalletStore();
   const { addHistory } = useHistoryStore();
   const { initialData, setInitialData } = useExplorerStore();
   const [isLoadingInterface, setIsLoadingInterface] = useState<boolean>(false);
@@ -269,18 +269,19 @@ export function ContractInvoker() {
     updateParametersJson([]);
 
     try {
-      const network = "testnet"; // Or get from config/state
+      const networkLowerCase = network?.toLowerCase() as string;
       const response = await fetch("/api/contract/interface", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ contractId, network }),
+        body: JSON.stringify({ contractId, network: networkLowerCase }),
       });
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
+        console.log("errorData", errorData);
         throw new Error(
           errorData.message ||
-            `Failed to fetch interface: ${response.statusText}`
+            `Failed to fetch interface: ${handleError(errorData.data.details)}`
         );
       }
 
