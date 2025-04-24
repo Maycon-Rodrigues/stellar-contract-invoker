@@ -1,8 +1,8 @@
-import { clsx, type ClassValue } from 'clsx';
-import { twMerge } from 'tailwind-merge';
-import { parameterTypes, ParameterType } from './parameter-types';
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
+import { parameterTypes, ParameterType } from "./parameter-types";
 import { Address, XdrLargeInt, xdr } from "@stellar/stellar-sdk";
-import { WalletNetwork } from '@creit.tech/stellar-wallets-kit';
+import { WalletNetwork } from "@creit.tech/stellar-wallets-kit";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -11,11 +11,11 @@ export function cn(...inputs: ClassValue[]) {
 export function getNetworkRPC(networkPassphrase: WalletNetwork): string {
   switch (networkPassphrase) {
     case WalletNetwork.PUBLIC:
-      return 'https://mainnet.sorobanrpc.com';
+      return "https://mainnet.sorobanrpc.com";
     case WalletNetwork.TESTNET:
-      return 'https://soroban-testnet.stellar.org:443';
+      return "https://soroban-testnet.stellar.org:443";
     default:
-      return 'https://soroban-testnet.stellar.org:443';
+      return "https://soroban-testnet.stellar.org:443";
   }
 }
 
@@ -33,12 +33,12 @@ export function formatResult(result: unknown) {
 type ParameterTypeObject = {
   key: ParameterType;
   value: any;
-}
+};
 
 export function handleParameterType(args: Array<ParameterTypeObject>) {
   let params: any = [];
 
-  args.map(arg => {
+  args.map((arg) => {
     switch (arg.key) {
       case parameterTypes.ADDRESS:
         return params.push(Address.fromString(arg.value).toScVal());
@@ -69,7 +69,34 @@ export function handleParameterType(args: Array<ParameterTypeObject>) {
       default:
         throw new Error(`Unhandled parameter type: ${arg.key}`);
     }
-  })
+  });
 
   return params;
-};
+}
+
+export function formatType(typeInfo: any): string {
+  // Esta função não é mais usada diretamente para o retorno da API, mas pode ser útil manter
+  if (!typeInfo) return "void";
+  if (typeof typeInfo === "string") return typeInfo; // Tipos básicos
+
+  if (typeInfo.name && typeInfo.generics) {
+    // Tipos com genéricos (Map, Vec, Option...)
+    const generics = typeInfo.generics.map(formatType).join(", ");
+    return `${typeInfo.name}<${generics}>`;
+  }
+  if (typeInfo.name) {
+    // Structs, Enums, etc.
+    return typeInfo.name;
+  }
+
+  return JSON.stringify(typeInfo); // Fallback
+}
+
+export function handleError(error: string): string {
+  switch (error) {
+    case "Cannot read properties of undefined (reading 'latestLedger')":
+      return "Contract not found, verify your network.";
+    default:
+      return error;
+  }
+}
