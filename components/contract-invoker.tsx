@@ -278,7 +278,6 @@ export function ContractInvoker() {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        console.log("errorData", errorData);
         throw new Error(
           errorData.message ||
             `Failed to fetch interface: ${handleError(errorData.data.details)}`
