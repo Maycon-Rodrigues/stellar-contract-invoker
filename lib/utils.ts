@@ -91,3 +91,12 @@ export function formatType(typeInfo: any): string {
 
   return JSON.stringify(typeInfo); // Fallback
 }
+
+export function handleError(error: string): string {
+  switch (error) {
+    case "Cannot read properties of undefined (reading 'latestLedger')":
+      return "Contract not found, verify your network.";
+    default:
+      return error;
+  }
+}
